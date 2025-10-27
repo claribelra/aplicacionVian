@@ -23,27 +23,24 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.rememberDrawerState
-import androidx.compose.material3.ModalNavigationDrawer
+import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.Nightlight
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aplicacionvianapp.LoginViewModel
+import com.example.aplicacionvianapp.ThemeViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModelStoreOwner
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    viewModelStoreOwner: ViewModelStoreOwner = androidx.compose.ui.platform.LocalContext.current as ViewModelStoreOwner
+    viewModelStoreOwner: ViewModelStoreOwner = LocalContext.current as ViewModelStoreOwner,
+    themeViewModel: ThemeViewModel
 ) {
     val context = LocalContext.current
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -51,117 +48,115 @@ fun HomeScreen(
     val loginViewModel: LoginViewModel = viewModel(viewModelStoreOwner)
     val tokenState = loginViewModel.token.collectAsState()
     val token = tokenState.value ?: ""
+    val isDarkMode by themeViewModel.isDarkMode.collectAsState()
 
     ModalNavigationDrawer(
         drawerState = drawerState,
         drawerContent = {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(260.dp)
-                    .background(Color.White)
-            ) {
-                // Encabezado con logo/avatar
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color(0xFF1976D2))
-                        .padding(vertical = 32.dp),
-                    contentAlignment = Alignment.Center
+            ModalDrawerSheet {
+                Column(
+                    modifier = Modifier.fillMaxHeight().background(MaterialTheme.colorScheme.surface)
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.logo_vianapp),
-                        contentDescription = "Logo Vianapp",
-                        modifier = Modifier.size(80.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-                // Opción Perfil
-                ListItem(
-                    headlineContent = { Text("Perfil", fontWeight = FontWeight.Bold, color = Color(0xFF1976D2)) },
-                    leadingContent = {
-                        Icon(Icons.Default.Person, contentDescription = "Perfil", tint = Color(0xFF1976D2))
-                    },
-                    modifier = Modifier.clickable {
-                        scope.launch { drawerState.close() }
-                        if (token.isNotBlank()) {
-                            navController.navigate("perfil")
-                        } else {
-                            // Aquí podrías mostrar un mensaje visual, pero la advertencia ya está abajo
-                        }
+                    Box(
+                        modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.primary).padding(vertical = 32.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.logo_vianapp),
+                            contentDescription = "Logo Vianapp",
+                            modifier = Modifier.size(80.dp)
+                        )
                     }
-                )
-                if (token.isBlank()) {
-                    Text(
-                        "Debes iniciar sesión para ver tu perfil",
-                        color = Color.Red,
-                        fontSize = 14.sp,
-                        modifier = Modifier.padding(start = 24.dp, top = 4.dp)
-                    )
-                }
-                HorizontalDivider()
-                // Opción Favoritos
-                ListItem(
-                    headlineContent = { Text("Favoritos", fontWeight = FontWeight.Bold, color = Color(0xFF4CAF50)) },
-                    leadingContent = {
-                        Icon(Icons.Default.Favorite, contentDescription = "Favoritos", tint = Color(0xFF4CAF50))
-                    },
-                    modifier = Modifier.clickable {
-                        scope.launch { drawerState.close() }
-                        navController.navigate("favoritos")
-                    }
-                )
-                HorizontalDivider()
-                // Opción Cerrar sesión
-                ListItem(
-                    headlineContent = { Text("Cerrar sesión", fontWeight = FontWeight.Bold, color = Color(0xFFD32F2F)) },
-                    leadingContent = {
-                        Icon(Icons.Default.Menu, contentDescription = "Cerrar sesión", tint = Color(0xFFD32F2F))
-                    },
-                    modifier = Modifier.clickable {
-                        scope.launch {
-                            drawerState.close()
-                            navController.navigate("login") {
-                                popUpTo("home") { inclusive = true }
-                                launchSingleTop = true
+                    Spacer(modifier = Modifier.height(16.dp))
+                    NavigationDrawerItem(
+                        label = { Text("Perfil", fontWeight = FontWeight.Bold) },
+                        icon = { Icon(Icons.Default.Person, contentDescription = "Perfil") },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            if (token.isNotBlank()) {
+                                navController.navigate("perfil")
                             }
                         }
+                    )
+                    if (token.isBlank()) {
+                        Text("Debes iniciar sesión para ver tu perfil", color = Color.Red, fontSize = 14.sp, modifier = Modifier.padding(start = 24.dp, top = 4.dp))
                     }
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                // Pie de página opcional
-                Text(
-                    text = "Vianapp © 2025",
-                    color = Color(0xFFB0B0B0),
-                    fontSize = 12.sp,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp)
-                )
+                    Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                    NavigationDrawerItem(
+                        label = { Text("Favoritos", fontWeight = FontWeight.Bold) },
+                        icon = { Icon(Icons.Default.Favorite, contentDescription = "Favoritos") },
+                        selected = false,
+                        onClick = {
+                            scope.launch { drawerState.close() }
+                            navController.navigate("favoritos")
+                        }
+                    )
+                    Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                    NavigationDrawerItem(
+                        label = { Text("Cerrar sesión", fontWeight = FontWeight.Bold) },
+                        icon = { Icon(Icons.Default.Menu, contentDescription = "Cerrar sesión") }, // Considerar cambiar este icono
+                        selected = false,
+                        onClick = {
+                            scope.launch {
+                                drawerState.close()
+                                navController.navigate("login") {
+                                    popUpTo("home") { inclusive = true }
+                                    launchSingleTop = true
+                                }
+                            }
+                        }
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Text(
+                        text = "Vianapp © 2025",
+                        color = Color.Gray,
+                        fontSize = 12.sp,
+                        modifier = Modifier.align(Alignment.CenterHorizontally).padding(bottom = 16.dp)
+                    )
+                }
             }
         },
-        // El contenido principal de la pantalla
         content = {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color(0xFFE5E5E5))
+                    .background(MaterialTheme.colorScheme.background)
             ) {
-                // Botón de menú siempre visible y destacado
-                IconButton(
-                    onClick = { scope.launch { drawerState.open() } },
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(start = 16.dp, top = 32.dp)
-                        .background(Color.White, shape = RoundedCornerShape(50))
-                        .size(48.dp)
-                ) {
-                    Icon(Icons.Default.Menu, contentDescription = "Menú", tint = Color(0xFF1976D2), modifier = Modifier.size(32.dp))
-                }
+                val mapImage = if (isDarkMode) R.drawable.fondo_mapa_dark else R.drawable.fondo_mapa
                 Image(
-                    painter = painterResource(id = R.drawable.fondo_mapa),
+                    painter = painterResource(id = mapImage),
                     contentDescription = "Mapa de fondo",
                     modifier = Modifier.fillMaxSize(),
                     alignment = Alignment.Center
                 )
+                Row(
+                    modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 32.dp).align(Alignment.TopCenter),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                     IconButton(
+                        onClick = { scope.launch { drawerState.open() } },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(50))
+                            .size(48.dp)
+                    ) {
+                        Icon(Icons.Default.Menu, contentDescription = "Menú", tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(32.dp))
+                    }
+                    IconButton(
+                        onClick = { themeViewModel.toggleTheme() },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(50))
+                            .size(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = if (isDarkMode) Icons.Default.LightMode else Icons.Default.Nightlight,
+                            contentDescription = "Cambiar Tema",
+                            tint = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.size(32.dp)
+                        )
+                    }
+                }
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -175,7 +170,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(24.dp))
                     Surface(
                         shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 8.dp,
                         modifier = Modifier.fillMaxWidth(0.95f)
                     ) {
@@ -186,7 +181,7 @@ fun HomeScreen(
                             Icon(
                                 painter = painterResource(id = R.drawable.ic_car),
                                 contentDescription = null,
-                                tint = Color(0xFF181A2A),
+                                tint = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.size(40.dp)
                             )
                             Spacer(modifier = Modifier.height(8.dp))
@@ -194,13 +189,13 @@ fun HomeScreen(
                                 text = "no tienes ninguna reserva",
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = Color(0xFF181A2A)
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
                                 text = "Selecciona tu destino, ajusta la hora y el parqueo será en segundos.",
                                 fontSize = 16.sp,
-                                color = Color(0xFF181A2A),
+                                color = MaterialTheme.colorScheme.onSurface,
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -208,7 +203,7 @@ fun HomeScreen(
                     Spacer(modifier = Modifier.height(16.dp))
                     Surface(
                         shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 8.dp,
                         modifier = Modifier.fillMaxWidth(0.95f)
                     ) {
@@ -219,7 +214,7 @@ fun HomeScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_parking),
                                     contentDescription = null,
-                                    tint = Color(0xFF181A2A),
+                                    tint = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.size(28.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))
@@ -227,7 +222,7 @@ fun HomeScreen(
                                     text = "¿Donde quieres estacionar tu vehículo?",
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF181A2A)
+                                    color = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Spacer(modifier = Modifier.height(12.dp))
@@ -239,8 +234,8 @@ fun HomeScreen(
                                 Surface(
                                     shape = RoundedCornerShape(16.dp),
                                     color = Color(0xFF4CAF50),
-                                    modifier = Modifier.weight(1f).clickable {
-                                        navController.navigate("openstreetmap")
+                                    modifier = Modifier.weight(1f).clickable { 
+                                        navController.navigate("openstreetmap") 
                                     }
                                 ) {
                                     Box(modifier = Modifier.height(40.dp), contentAlignment = Alignment.CenterStart) {
@@ -274,7 +269,7 @@ fun HomeScreen(
                     Text(
                         text = "Gestión de parqueos",
                         fontSize = 14.sp,
-                        color = Color(0xFF181A2A),
+                        color = MaterialTheme.colorScheme.onSurface,
                         modifier = Modifier.padding(start = 24.dp, top = 8.dp)
                     )
                     Row(
@@ -298,20 +293,20 @@ fun HomeScreen(
                             text = "Estamos en los mejores sectores de Bogotá",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color(0xFF181A2A)
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Icon(
                             painter = painterResource(id = R.drawable.ic_arrow_right),
                             contentDescription = null,
-                            tint = Color(0xFF181A2A),
+                            tint = MaterialTheme.colorScheme.onSurface,
                             modifier = Modifier.size(28.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
                         shape = RoundedCornerShape(24.dp),
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.surface,
                         shadowElevation = 8.dp,
                         modifier = Modifier
                             .fillMaxWidth(0.7f)
@@ -321,7 +316,7 @@ fun HomeScreen(
                             Text(
                                 text = "Opiniones de nuestros clientes",
                                 fontSize = 18.sp,
-                                color = Color(0xFF181A2A),
+                                color = MaterialTheme.colorScheme.onSurface,
                                 modifier = Modifier.padding(12.dp)
                             )
                         }

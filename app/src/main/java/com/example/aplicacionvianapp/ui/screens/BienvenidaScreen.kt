@@ -22,13 +22,18 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.draw.rotate
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import com.example.aplicacionvianapp.ThemeViewModel
 
 @Composable
-fun BienvenidaScreen() {
+fun BienvenidaScreen(themeViewModel: ThemeViewModel) {
+    val isDarkMode by themeViewModel.isDarkMode.collectAsState()
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFE5E5E5)),
+            .background(MaterialTheme.colorScheme.background),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(12.dp))
@@ -41,7 +46,7 @@ fun BienvenidaScreen() {
             text = "Aparca con\nSeguridad",
             fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF181A2A),
+            color = MaterialTheme.colorScheme.onBackground,
             lineHeight = 36.sp
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -51,11 +56,12 @@ fun BienvenidaScreen() {
                 .height(200.dp),
             contentAlignment = Alignment.BottomCenter
         ) {
+            val primaryColor = MaterialTheme.colorScheme.primary
             Canvas(modifier = Modifier
                 .size(220.dp)
                 .align(Alignment.BottomCenter)) {
                 drawCircle(
-                    color = Color(0xFF2986F8),
+                    color = primaryColor,
                     radius = size.width / 2
                 )
             }
@@ -89,7 +95,7 @@ fun BienvenidaScreen() {
             text = "Bienvenido!",
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold,
-            color = Color(0xFF181A2A)
+            color = MaterialTheme.colorScheme.onBackground
         )
         Spacer(modifier = Modifier.height(32.dp))
         BottomBar()
@@ -102,11 +108,11 @@ fun BeneficioItem(text: String) {
         Icon(
             imageVector = Icons.Default.CheckCircle,
             contentDescription = null,
-            tint = Color(0xFF4CAF50),
+            tint = MaterialTheme.colorScheme.primary,
             modifier = Modifier.size(24.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, fontSize = 16.sp, color = Color(0xFF181A2A))
+        Text(text = text, fontSize = 16.sp, color = MaterialTheme.colorScheme.onBackground)
     }
     Spacer(modifier = Modifier.height(8.dp))
 }

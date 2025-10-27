@@ -1,9 +1,11 @@
 package com.example.aplicacionvianapp
 
 data class Reserva(
-    val id: Int,
-    val nombreZona: String,
-    val fecha: String,
-    val usuario: Int
+    val nombre: String? = null,
+    val cedula: String? = null,
+    val telefono: String? = null,
+    val placa: String? = null,
+    val tipo: String? = null,
+    val fechaHora: String? = null,
+    val nombreZona: String? = null
 )
-

@@ -44,6 +44,30 @@ NavHost(navController = navController, startDestination = "home") {
             apiService = apiService
         )
     }
+    composable("parqueaderoOwnerMap/{id}") { backStackEntry ->
+        val parqueaderoId = backStackEntry.arguments?.getString("id")?.toIntOrNull()
+        val parqueaderos = parqueaderosViewModel.parqueaderos.collectAsState().value
+        val parqueadero = parqueaderos.firstOrNull { it.id == parqueaderoId }
+        if (parqueadero != null) {
+            com.example.aplicacionvianapp.ui.screens.ParqueaderoOwnerMapScreen(
+                navController = navController,
+                parqueadero = parqueadero
+            )
+        } else {
+            // Mostrar el mapa aunque no se encuentre el parqueadero
+            com.example.aplicacionvianapp.ui.screens.ParqueaderoOwnerMapScreen(
+                navController = navController,
+                parqueadero = null // Se debe permitir null en el parámetro
+            )
+        }
+    }
+    composable("login") {
+        LoginScreen(
+            navController = navController,
+            onLoginSuccess = { navController.navigate("home") },
+            viewModelStoreOwner = viewModelStoreOwner
+        )
+    }
 }
 // Para navegar a FavoritosScreen desde cualquier parte:
 // navController.navigate("favoritos/$userId/$token")

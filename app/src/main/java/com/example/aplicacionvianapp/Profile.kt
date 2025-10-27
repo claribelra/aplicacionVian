@@ -2,6 +2,7 @@ package com.example.aplicacionvianapp
 
 data class Profile(
     val id: Int,
+    val username: String, // Campo añadido
     val rol: String,
     val nombres: String,
     val apellidos: String,
@@ -15,4 +16,3 @@ data class Profile(
     val user: Int,
     val parqueaderoprivado: Int?
 )
-

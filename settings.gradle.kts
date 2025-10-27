@@ -16,9 +16,10 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // SOLUCIÓN: Añadir el repositorio de JitPack
+        maven { url = uri("https://jitpack.io") }
     }
 }
 
 rootProject.name = "aplicacionvianapp"
 include(":app")
- 

@@ -7,10 +7,18 @@ import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Path
 import retrofit2.http.DELETE
+import retrofit2.http.PATCH
 
 interface ApiService {
     @GET("parqueaderos/")
     suspend fun getParqueaderos(): List<Parqueadero>
+
+    @PATCH("parqueaderos/{id}/")
+    suspend fun updateParqueadero(
+        @Header("Authorization") token: String,
+        @Path("id") parqueaderoId: String,
+        @Body body: Map<String, String>
+    ): Parqueadero
 
     @GET("perfiles/")
     suspend fun getProfiles(@Query("user") userId: Int, @Header("Authorization") token: String): List<Profile>

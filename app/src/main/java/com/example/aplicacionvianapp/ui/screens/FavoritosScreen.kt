@@ -14,26 +14,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.aplicacionvianapp.ApiService
-import com.example.aplicacionvianapp.Parqueadero
 import com.example.aplicacionvianapp.ParqueaderosViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.shape.RoundedCornerShape
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @Composable
 fun FavoritosScreen(
     parqueaderosViewModel: ParqueaderosViewModel = viewModel(),
     userId: Int,
-    token: String,
-    apiService: ApiService
+    token: String
 ) {
+    // LLAMADA CORREGIDA: Ya no se pasa apiService
     LaunchedEffect(Unit) {
-        withContext(Dispatchers.IO) {
-            parqueaderosViewModel.cargarFavoritosDesdeBackend(userId, token, apiService)
-        }
+        parqueaderosViewModel.cargarFavoritosDesdeBackend(userId, token)
     }
+
     val favoritosIds = parqueaderosViewModel.favoritos.collectAsState().value
     val parqueaderos = parqueaderosViewModel.parqueaderos.collectAsState().value
     val favoritos = parqueaderos.filter { favoritosIds.contains(it.id) }

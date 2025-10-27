@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.aplicacionvianapp.R
 import com.example.aplicacionvianapp.Profile
+import com.example.aplicacionvianapp.Reserva
 import com.example.aplicacionvianapp.UserViewModel
 import androidx.compose.ui.text.font.FontWeight
 
@@ -143,5 +144,4 @@ fun PerfilScreen(token: String, onEditPerfil: () -> Unit = {}) {
 // Modelos para reservas y opiniones
 // Puedes moverlos a sus propios archivos si ya existen
 
-data class Reserva(val nombreZona: String)
 data class Opinion(val nombreParqueadero: String, val estrellas: Int, val comentario: String, val imagenResId: Int)
